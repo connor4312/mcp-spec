@@ -1395,6 +1395,14 @@ export interface Stream {
    */
   streamId: string;
 
+  /**
+   * The type of messages sent on this stream.
+   * - All methods and notifications may be sent on the default `generic` stream.
+   * - A `chat` stream represents a language model conversation and can
+   *   additionally involve `notifications/chat/message` notifications.
+   */
+  kind?: "generic" | "chat";
+
   resumeInterval?: {
     /**
      * The minimum number of seconds a client should wait before resuming
@@ -1529,6 +1537,20 @@ export interface StreamEndNotification extends Notification {
   }
 }
 
+/**
+ * Indicates a chat message was sent. This notification type may only be sent
+ * on Streams marked with the `chat` type.
+ */
+export interface ChatMessageNotification extends Notification {
+  method: 'notifications/chat/message';
+  params: {
+    /**
+     * Message that was sent on the stream.
+     */
+    message: SamplingMessage;
+  }
+}
+
 
 /* Client messages */
 export type ClientRequest =
@@ -1576,7 +1598,8 @@ export type ServerNotification =
   | ToolListChangedNotification
   | PromptListChangedNotification
   | StreamCreateNotification
-  | StreamEndNotification;
+  | StreamEndNotification
+  | ChatMessageNotification;
 
 export type ServerResult =
   | EmptyResult
